@@ -31,5 +31,7 @@
     "--background-index",
     "--query-driver=**",
     "--compile-commands-dir=c:\\Users\\pablo\\Desktop\\UFSC\\6sem\\digitais_embarcados\\trabalho2\\monitoramento_tanque_iot\\build"
-  ]
+  ],
+  "idf.port": "COM8",
+  "idf.flashType": "UART"
 }

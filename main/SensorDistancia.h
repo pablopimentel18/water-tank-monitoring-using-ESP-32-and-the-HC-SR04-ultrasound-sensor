@@ -2,8 +2,6 @@
 #define sensordistancia_h
 
 #include "driver/gpio.h"
-#include "esp_timer.h"
-#include "esp_rom_sys.h"
 
 class SensorDistancia {
     public:
