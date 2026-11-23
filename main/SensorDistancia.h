@@ -10,6 +10,7 @@ class SensorDistancia {
     private:
         gpio_num_t triggerPin;
         gpio_num_t echoPin;
+        float medirUmaVez();
 };
 
 #endif

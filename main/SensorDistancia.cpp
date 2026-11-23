@@ -1,6 +1,10 @@
 #include "SensorDistancia.h"
 #include "esp_timer.h"
 #include "esp_rom_sys.h"
+#include <vector>
+#include <algorithm>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 SensorDistancia::SensorDistancia(gpio_num_t triggerPin, gpio_num_t echoPin) {
     this->triggerPin = triggerPin;
@@ -14,7 +18,7 @@ SensorDistancia::SensorDistancia(gpio_num_t triggerPin, gpio_num_t echoPin) {
     gpio_set_level(triggerPin, 0);
 }
 
-float SensorDistancia::medirDistancia(){
+float SensorDistancia::medirUmaVez(){
     gpio_set_level(triggerPin, 0);
     esp_rom_delay_us(2);
     gpio_set_level(triggerPin, 1);
@@ -38,10 +42,25 @@ float SensorDistancia::medirDistancia(){
     }
     int64_t endTime = esp_timer_get_time();
     
-    printf("Espera ate subir: %lld us | Duracao do ECHO: %lld us\n",
-       (startTime - timeoutStart), (endTime - startTime));
-    
     return (endTime - startTime) * 0.0343 / 2.0;
-
-
 }
+
+
+float SensorDistancia::medirDistancia() {
+    std::vector<float> leituras;
+    int leiturasValidas = 0;
+    int tentativas = 0;
+    while (leiturasValidas < 5 && tentativas < 10) {
+        float distancia = medirUmaVez();
+        if (distancia >= 0) {
+            leituras.push_back(distancia);
+            leiturasValidas++;
+        }
+        tentativas++;
+        vTaskDelay(pdMS_TO_TICKS(60));
+    }
+
+    std::sort(leituras.begin(), leituras.end());
+    return leituras.at(2);
+}
+
